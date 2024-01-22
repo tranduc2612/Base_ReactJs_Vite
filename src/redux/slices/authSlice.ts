@@ -1,4 +1,4 @@
-import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 
 interface IUserInfo{
@@ -27,6 +27,23 @@ const initialUser: IUserInfo = {
     }
 }
 
+// --- Tạo thunk ---
+export const refreshToken = createAsyncThunk(
+    'task/addTask',
+    async (token: string) => {
+        // check 
+      const response:IUser = await new Promise((resolve) =>
+      // --- Gọi API ---
+        
+        setTimeout(() => resolve({ 
+            lastName: ""
+         }), 1000)
+      );
+      return response;
+    }
+  );
+  
+
 
 const authSlice = createSlice({
     name: 'auth',
@@ -37,18 +54,31 @@ const authSlice = createSlice({
         },
         loginSucces(state, action: PayloadAction<IUser>){
             state.isLogin = true
+            state.logging = false
             state.infoData = action.payload
         },
-        loginFailed(state, action: PayloadAction<IUser>){
+        loginFailed(state){
             state.isLogin = false
+            state.logging = false
+            state.infoData = undefined
         },
         logout(state){
             state.infoData = undefined,
             state.isLogin = false
         }
-
-    
-    }
+    },
+    extraReducers: (builder) => {
+        // --- Xử lý trong reducer với case pending / fulfilled / rejected ---
+         builder
+           .addCase(refreshToken.pending, (state) => {
+                state.logging = true
+           })
+           .addCase(refreshToken.fulfilled, (state, action: PayloadAction<IUser>) => {
+                state.logging = false
+                state.isLogin = true
+                state.infoData = action.payload
+           });
+       }
 })
 
 export const {login,logout,loginSucces,loginFailed} = authSlice.actions

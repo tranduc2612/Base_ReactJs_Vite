@@ -2,7 +2,7 @@ import { ThunkAction, configureStore,Action } from "@reduxjs/toolkit";
 import countReducer from "./slices/counterSlice";
 import createSagaMiddleware from 'redux-saga'
 import rootSaga from "./sagaRoot";
-import authReducer from "./slices/authSlice";
+import authReducer, { refreshToken } from "./slices/authSlice";
 
 const sagaMiddleware = createSagaMiddleware();
 export const store = configureStore({
@@ -14,7 +14,12 @@ export const store = configureStore({
 })
 
 // then run the saga
-sagaMiddleware.run(rootSaga)
+sagaMiddleware.run(rootSaga);
+
+var token = localStorage.getItem('access_token');
+if(token){
+    store.dispatch(refreshToken(token));
+}
 
 export type AppDispatch = typeof store.dispatch;
 

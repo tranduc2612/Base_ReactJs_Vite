@@ -1,8 +1,17 @@
 import { ReactElement } from "react";
 import { PRIVATE_ROUTER, PUBLIC_ROUTER } from "./routes"
-// import { Navigate } from 'react-router-dom';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { useAppSelector } from "./redux/hook";
+import { isLogin, logging } from "./redux/slices/authSlice";
+
+
 function App() {
+  const isLoginUser = useAppSelector(isLogin);
+  const isLogining = useAppSelector(logging);
+  // console.log(isLoginUser)
+  if (isLogining) {
+    return <>Loading....</>
+  }
   return (
     <>
       <Router>
@@ -13,7 +22,10 @@ function App() {
               key={index}
               path={item.path}
               element={
-                <Page />
+                isLoginUser ?
+                  <Navigate to="/" />
+                  :
+                  <Page />
               }
             />
           })}
@@ -23,10 +35,15 @@ function App() {
             return <Route
               key={index}
               path={item.path}
-              element={<Page />}
+              element={
+                isLoginUser ?
+                  <Page />
+                  :
+                  <Navigate to="/login" />
+              }
             />
           })}
-          {/* <Route path="*" element={<>NotFound</>} /> */}
+          <Route path="*" element={<>NotFound</>} />
         </Routes>
       </Router>
     </>

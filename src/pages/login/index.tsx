@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "~/redux/hook";
 import { ILoginPayload, inforUser, isLogin, login, logout } from "~/redux/slices/authSlice";
 import { decrement, increment, selectCount } from "~/redux/slices/counterSlice";
@@ -6,7 +7,8 @@ import { decrement, increment, selectCount } from "~/redux/slices/counterSlice";
 function LoginPage() {
     const count = useAppSelector(selectCount);
     const isLoginUser = useAppSelector(isLogin);
-    const currentUser = useAppSelector(inforUser)
+    const currentUser = useAppSelector(inforUser);
+    const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const [formLogin, setFormLogin] = useState<ILoginPayload>({
         username: undefined,
@@ -68,7 +70,8 @@ function LoginPage() {
             {currentUser?.lastName}
             <br />
             {currentUser?.gender}
-
+            <br />
+            <button onClick={() => navigate("/")}>Home</button>
         </>
 
     </div>);

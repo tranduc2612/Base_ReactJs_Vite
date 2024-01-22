@@ -1,8 +1,7 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { call, fork, put, take } from 'redux-saga/effects';
-import { ILoginPayload, login, loginSucces, logout } from './slices/authSlice';
+import { ILoginPayload, login, loginFailed, loginSucces, logout } from './slices/authSlice';
 import axios, { AxiosResponse } from 'axios'; // Import AxiosResponse
-
 // worker Saga: will be fired on USER_FETCH_REQUESTED actions
 function* logger(action: PayloadAction) {
   console.log('log_saga', action);
@@ -21,12 +20,16 @@ const fetchApiAuth = async (payload: ILoginPayload): Promise<AxiosResponse> => {
 function* handleLogin(payload: ILoginPayload) {
   try {
     const response: AxiosResponse = yield call(fetchApiAuth, payload);
-    const dataUser: IUser = {
-      ...response.data
-    };
-    yield put(loginSucces(dataUser));
-    if(dataUser.token){
-        localStorage.setItem('access_token',dataUser.token)
+    if(response.data){
+      const dataUser: IUser = {
+        ...response.data
+      };
+      yield put(loginSucces(dataUser));
+      if(dataUser.token){
+          localStorage.setItem('access_token',dataUser.token)
+        }
+    }else{
+      yield put(loginFailed());
     }
     console.log(payload, 'handle_login');
   } catch (error) {

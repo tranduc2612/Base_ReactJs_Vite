@@ -1,4 +1,6 @@
 import useSWR, { mutate } from "swr";
+import { useAppDispatch } from "~/redux/hook";
+import { logout } from "~/redux/slices/authSlice";
 import { getAllPosts, handlePosts } from "~/services/blogsApi";
 import { IPosts } from "~/types/IBlog";
 
@@ -10,9 +12,12 @@ function Home() {
         revalidateOnFocus: false,
         revalidateOnReconnect: false
     })
+    const dispatch = useAppDispatch();
+    const handleLogout = () => {
+        dispatch(logout())
+    }
 
     if (error) return <div>Xảy ra lỗi</div>
-    if (isLoading) return <div>loading...</div>
 
     const handleClick = async () => {
         const dataSubmit: IPosts = {
@@ -25,8 +30,9 @@ function Home() {
     }
     return (<div>
         <button onClick={handleClick}>Click</button>
+        <button type="button" onClick={handleLogout}>logout</button>
 
-        {data && data.map((post) => {
+        {isLoading || !data ? <>Loading san pham</> : data.map((post) => {
             return <div key={Math.random()}>{post.id} {post.title}</div>
         })}
     </div>);
